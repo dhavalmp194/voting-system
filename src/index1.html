@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.4/web3.min.js" ></script>
+
+    <title>Project</title>
+</head>
+
+<body>
+    <div class="container">
+        <section>
+            <h3>Add Candidate</h3>
+            <form class="row g-3 needs-validation" novalidate id="addCandidate" >
+
+                <div class="col-md-4">
+                    <label for="validationCustom01" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="candidateName" required >
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+                <!-- <div class="col-md-4">
+                    <label for="validationCustom02" class="form-label">Last name</label>
+                    <input type="text" class="form-control" id="validationCustom02" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div> -->
+                <div class="col-12 pt-2">
+                    <button class="btn btn-primary" type="submit">Submit form</button>
+                </div>
+            </form>
+        </section>
+        <br>
+        <section>
+            <h3>Get Candidate List</h3>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Vote Count</th>
+
+                    </tr>
+                </thead>
+                <tbody id="candidateList">
+                    
+                </tbody>
+            </table>
+        </section>
+        <br>
+<!--         <section>
+            <h3>Get Voter List</h3>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Vote address</th>
+                        <th scope="col">Approved</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mark</td>
+                        <td>5</td>
+                        <td>0x000000000</td>
+                        <td>1</td>
+
+                    </tr>
+                    <tr>
+                        <td>Jacob</td>
+                        <td>12</td>
+                        <td>0x0000000000</td>
+                        <td>1</td>
+
+                    </tr>
+                    <tr>
+                        <th>3</th>
+                        <td>Jacob</td>
+                        <td>0x00000000000</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section> -->
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.11/web3.min.js"></script> -->
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="./web3js.js"></script>
+    
+</body>
+
+</html>
