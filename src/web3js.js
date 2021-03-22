@@ -249,6 +249,25 @@ var myContract = new web3.eth.Contract([
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "getVoterAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "_voterAddress",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "getVoterList",
 		"outputs": [
@@ -451,7 +470,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0xbb149286d54C719B7FC91cd0eDD5E1994b99bfa3');
+], '0xFcb57502BA54C5B275f73C4dA483247160675049');
 
 var tokenContract = new web3.eth.Contract([
 	{
@@ -873,39 +892,48 @@ const getVoterCount = () => {
 }
 
 const checkVotingIsStart = () => {
-    myContract.methods.setElection().call().then(data => {
-        console.log('data1: ', data);
-        return data;
-    }).catch(e => {
-        console.log(e);
-    })
+	return new Promise((resolve, reject) => {
+
+		myContract.methods.setElection().call().then(data => {
+			resolve(data);
+		}).catch(e => {
+			console.log(e);
+			reject(e);
+		})
+	})
 }
 
 const electionStatus = () => {
     
-    let data = checkVotingIsStart();
+    checkVotingIsStart()
+	.then(data=> {
 
-    let electionInfo;
-    if(data == true){
-        electionInfo = `<p class="name"><i class="ion-ios-checkmark" style="margin-right: 15px; color: green;"></i>
-        Voting is started you can vote your candidate from candidate list.</p>`;
-    }else{
-        electionInfo = `<p class="name"><i class="ion-ios-close" style="margin-right: 15px; color: red;"></i>
-        No elections scheduled today.</p>`;
-    }
-    $("#electionState").append(electionInfo);
+		console.log('Election data: ', data);
+	
+		let electionInfo;
+		if(data == true){
+			electionInfo = `<p class="name"><i class="ion-ios-checkmark" style="margin-right: 15px; color: green;"></i>
+			Voting is started you can vote your candidate from candidate list.</p>`;
+		}else{
+			electionInfo = `<p class="name"><i class="ion-ios-close" style="margin-right: 15px; color: red;"></i>
+			No elections scheduled today.</p>`;
+		}
+		$("#electionState").append(electionInfo);
+	})
 }
 
 const changeElectionStateButton = () => {
-    let data = checkVotingIsStart();
-    let button;
-    if(data == true){
-        button = `<a class="btn v3" id=""elecButtonTrue">End Election</a>`;
-        $("#setElectionButton").append(button);
-    }else{
-        button = `<a class="btn v3" id="elecButtonFalse">Start Election</a>`;
-        $("#setElectionButton").append(button);
-    }
+    checkVotingIsStart()
+	.then(data => {
+		let button;
+		if(data == true){
+			button = `<a class="btn v3" id=""elecButtonTrue">End Election</a>`;
+			$("#setElectionButton").append(button);
+		}else{
+			button = `<a class="btn v3" id="elecButtonFalse">Start Election</a>`;
+			$("#setElectionButton").append(button);
+		}
+	})
 }
 
 const changeElectionState = (value) =>{
@@ -1038,6 +1066,7 @@ const userNavigation = () => {
 const checkRegisteredUser = (address) => {
     myContract.methods.registeredVoter(address).call()
     .then(data => {
+		console.log('data: ', data);
         if(data == false){
             window.location.href = "login.html";
         }
@@ -1105,7 +1134,8 @@ const connectMetamask = async () => {
             myAccount = await ethereum.request({ method: 'eth_requestAccounts' });
             console.log(myAccount[0]);
             if(myAccount[0] == adminAddress){
-                checkRegisteredUser(myAccount[0]);
+				console.log("In");
+                // checkRegisteredUser(myAccount[0]);
                 getUser();
                 addCandidateForm();
                 electionBalance();
@@ -1117,6 +1147,7 @@ const connectMetamask = async () => {
                 checkVotingIsStart();
                 changeElectionStateButton();
             }else{
+				console.log("User");
                 checkRegisteredUser(myAccount[0]);
                 getUser();
                 userBalance(myAccount[0]);

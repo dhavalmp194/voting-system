@@ -1,4 +1,4 @@
 # voting-system
 
 Token Contract : 0xed7E3e02f07c187f4abdfD457F4Cce2c6931C2Ec
-Election Contract : 0xbb149286d54C719B7FC91cd0eDD5E1994b99bfa3
+Election Contract : 0xFcb57502BA54C5B275f73C4dA483247160675049
