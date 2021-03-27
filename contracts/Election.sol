@@ -145,6 +145,30 @@ contract Election {
         return (_id, _firstname, _lastname, _email, _mobile, _birthDate, _voterAddress, _approved);
     }
     
+     function getVoterDetails() public view returns(uint _id, string memory _firstname, string memory _lastname, string memory _email, string memory _mobile, string memory _birthDate, address _voterAddress, string memory _resAdderess, bool _approved) {
+        uint i;
+        uint j = 0;
+        for(i = 1; i <= voterCount; i++){
+            if(voter[i].voterAddress == msg.sender){
+            _id = voter[i].id;
+            _firstname = voter[i].firstname;
+            _lastname = voter[i].lastname;
+            _email = voter[i].email;
+            _mobile =  voter[i].mobile;
+            _birthDate =  voter[i].birthDate;
+            _voterAddress = voter[i].voterAddress;
+            _approved = voter[i].approved;
+            _resAdderess = voter[i].resAddress;
+            
+            break;
+            }
+            j++;
+            
+        }
+        return (_id, _firstname, _lastname, _email, _mobile, _birthDate, _voterAddress, _resAdderess, _approved);
+    }
+    
+
     function getVoterAddress(uint _id) public view returns(address _voterAddress){
         _voterAddress = voter[_id].voterAddress;
         return _voterAddress;
@@ -195,24 +219,23 @@ contract Election {
     }
     
     //calculate total votes for every candidate
-    function calculateVote() public view returns(uint[] memory _candidateId, string[] memory _name, uint[] memory _totalVotes){
+    function calculateVote() public view returns(uint _candidateId, string memory _name, string memory _partyName, uint _totalVotes){
         //Require Election has to be ended
         require(setElection == false, "Election is not ended yet.");
         
         //Require Owner address
         require(msg.sender == owner, "Ownable: caller is not the owner");
-        _candidateId = new uint[](candidatesCount);
-        _name = new string[](candidatesCount);
-        _totalVotes = new uint[](candidatesCount);
-        uint index = 0;
+        uint MaxVote = 0;
         for(uint i = 1; i <= candidatesCount; i++){
-            Candidate storage candidate = candidates[i];
-            _candidateId[index] = candidate.id;
-            _name[index] = candidate.name;
-            _totalVotes[index] = candidate.voteCount;
-            index++;
+            if(MaxVote <= candidates[i -1].voteCount){
+                _candidateId = candidates[i -1].id;
+                _name = candidates[i -1].name;
+                _partyName = candidates[i -1].partyName;
+                _totalVotes = candidates[i -1].voteCount;
+                MaxVote = candidates[i -1].voteCount;
+            }
         }
-        return(_candidateId, _name, _totalVotes);
+        return(_candidateId, _name, _partyName, _totalVotes);
     }
     
     function _sendTokens(address beneficiary, uint256 tokenAmount) public {

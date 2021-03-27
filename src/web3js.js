@@ -5,6 +5,8 @@
 // web3 = new Web3(new window.ethereum.HttpProvider("https://kovan.infura.io/v3/d3c130d0062b49f78f315220f14db23e"));
 web3 = new Web3(ethereum);
 
+var myAccountAddress;
+
 var myAccount = [];
 var adminAddress = "0xa10434ab27543636ac39558da7e87300b08034b5";
 
@@ -170,19 +172,24 @@ var myContract = new web3.eth.Contract([
 		"name": "calculateVote",
 		"outputs": [
 			{
-				"internalType": "uint256[]",
+				"internalType": "uint256",
 				"name": "_candidateId",
-				"type": "uint256[]"
+				"type": "uint256"
 			},
 			{
-				"internalType": "string[]",
+				"internalType": "string",
 				"name": "_name",
-				"type": "string[]"
+				"type": "string"
 			},
 			{
-				"internalType": "uint256[]",
+				"internalType": "string",
+				"name": "_partyName",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
 				"name": "_totalVotes",
-				"type": "uint256[]"
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -262,6 +269,59 @@ var myContract = new web3.eth.Contract([
 				"internalType": "address",
 				"name": "_voterAddress",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getVoterDetails",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_firstname",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_lastname",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_email",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_mobile",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_birthDate",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "_voterAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_resAdderess",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "_approved",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -470,7 +530,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0xFcb57502BA54C5B275f73C4dA483247160675049');
+], '0x9ac39592e6ebdbc8713348c2d8868c92b675bd4c');
 
 var tokenContract = new web3.eth.Contract([
 	{
@@ -1133,6 +1193,7 @@ const connectMetamask = async () => {
         try {
             myAccount = await ethereum.request({ method: 'eth_requestAccounts' });
             console.log(myAccount[0]);
+			myAccountAddress = myAccount[0];
             if(myAccount[0] == adminAddress){
                 // checkRegisteredUser(myAccount[0]);
                 getUser();
@@ -1160,6 +1221,9 @@ const connectMetamask = async () => {
             let secondPart = myAccount[0].slice(-4);
             let address = firstPart + "..." + secondPart;
             $("#ethAddress").append(address);
+
+			getMyProfile();
+			getWinnerDetails();
         } catch (error) {
             console.log(error);
         }
@@ -1167,4 +1231,52 @@ const connectMetamask = async () => {
 }
 connectMetamask();
 
+const getMyProfile =  async () => {
+	console.log(myAccountAddress);
+	await myContract.methods.getVoterDetails().call({from : myAccountAddress})
+    .then(data => {
+		console.log(data);
+		var profileData = `<li>
+								<h6>First Name :</h6>
+								<span>${data._firstname}</span>
+							</li>
+							<li>
+								<h6>Last Name :</h6>
+								<span>${data._lastname}</span>
+							</li>
+							<li>
+								<h6>Eth  Address :</h6>
+								<span>${data._voterAddress}</span>
+							</li>
+							<li>
+								<h6>Status :</h6>
+								<span>${data._approved}</span>
+							</li>
+							<li>
+								<h6>Email Id :</h6>
+								<span>${data._email}</span>
+							</li>
+							<li>
+								<h6>Phone :</h6>
+								<span>${data._mobile}</span>
+							</li>
+							<li>
+								<h6>Address :</h6>
+								<span>${data._resAdderess}</span>
+							</li>`;
+		$("#myProfileDivision").html(profileData);
+    })
+}
 
+
+
+const getWinnerDetails =  async () => {
+	await myContract.methods.calculateVote().call({from : myAccountAddress})
+    .then(data => {
+		console.log(data);
+		$("#winner-list").html(
+			`<h2 class="counter-value">${data._totalVotes}</h2>
+		<span class="desc">${data._name} FROM ${data._partyName}</span>`
+		)
+    })
+}
