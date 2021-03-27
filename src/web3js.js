@@ -754,7 +754,6 @@ console.log(myContract);
 
 const getCandidateList = () => {
     myContract.methods.getCandidateList().call().then(data => {
-        console.log('data: ', data);
         let candidateList;
         let totalCandidates = `<div class="statistic__item item--green">
                                 <h2 class="counter-value">${data[0].length}</h2>
@@ -1128,13 +1127,13 @@ const addCandidateForm = () => {
         </form>`;
     $("#addCandidate-form").append(data);
 }
+
 const connectMetamask = async () => {
     if (window.ethereum) {
         try {
             myAccount = await ethereum.request({ method: 'eth_requestAccounts' });
             console.log(myAccount[0]);
             if(myAccount[0] == adminAddress){
-				console.log("In");
                 // checkRegisteredUser(myAccount[0]);
                 getUser();
                 addCandidateForm();

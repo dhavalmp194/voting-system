@@ -2,26 +2,37 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol';
+
 contract Election {
     
+    IERC20 public token;
+    
     address owner;
-    // Model a Candidate
+    
     struct Candidate {
         uint id;
         string name;
+        string partyName;
         uint voteCount;
     }    
 
     struct Voter {
         uint id;
         address voterAddress;
-        string name;
+        string firstname;
+        string lastname;
+        string email;
+        string mobile;
+        string resAddress;
+        string birthDate;
         bool approved;
     }
     
     //register voter
     mapping(uint => Voter) public voter;
     mapping(address => bool) public approveVoters;
+    mapping(address => bool) public registeredVoter;
     
     // Store accounts that have voted
     mapping(address => bool) public voters;
@@ -36,10 +47,11 @@ contract Election {
         uint indexed _candidateId
     );
     
-    constructor() public {
+    constructor(IERC20 _token) public {
         owner = msg.sender;
-        addCandidate("Modi");
-        addCandidate("Rahul");
+        addCandidate("Modi", "BJP");
+        addCandidate("Rahul", "Congress");
+        token = _token;
     }
     
     modifier onlyOwner(){
@@ -59,11 +71,11 @@ contract Election {
     }
     
     //add Candidate
-    function addCandidate(string memory _name) public onlyOwner{
+    function addCandidate(string memory _name, string memory _partyName) public onlyOwner{
         //Require Election has not started
         require(setElection == false, "Election is ongoing, You cannot add new Candidate");
         candidatesCount++;
-        candidates[candidatesCount] = Candidate(candidatesCount, _name, 0); // instantiate Candidate Object
+        candidates[candidatesCount] = Candidate(candidatesCount, _name, _partyName, 0); // instantiate Candidate Object
     }
     
     //get One Candidate
@@ -74,53 +86,79 @@ contract Election {
     }
     
     //get candidates list
-    function getCandidateList() public view returns(string[] memory _name, uint[] memory _voteCount){
+    function getCandidateList() public view returns(string[] memory _name, string[] memory _partyName, uint[] memory _voteCount){
         _name = new string[](candidatesCount);
+        _partyName = new string[](candidatesCount);
         _voteCount = new uint[](candidatesCount);
         uint i;
         uint j;
         for(i = 1; i <= candidatesCount; i++){
             _name[j] = candidates[i].name;
             _voteCount[j] = candidates[i].voteCount;
+            _partyName[j] = candidates[i].partyName;
             j++;
         }
-        return(_name, _voteCount);
+        return(_name, _partyName, _voteCount);
     }
     
     //register voter
-    function registerVoter(string memory _name) public {
+    function registerVoter(string memory _firstname, string memory _lastname, string memory _email, string memory _mobile, string memory _resAddress, string memory _birthDate) public {
+        require(!registeredVoter[msg.sender], "Already registered");
         voterCount++;
         voter[voterCount].id = voterCount;
         voter[voterCount].voterAddress = msg.sender;
-        voter[voterCount].name = _name;
+        voter[voterCount].firstname = _firstname;
+        voter[voterCount].lastname = _lastname;
+        voter[voterCount].email = _email;
+        voter[voterCount].mobile = _mobile;
+        voter[voterCount].resAddress = _resAddress;
+        voter[voterCount].birthDate = _birthDate;
         voter[voterCount].approved = false;
         voterAddress.push(msg.sender);
+        registeredVoter[msg.sender] = true;
     }
     
     //get all voter list
-    function getVoterList() public view returns(uint[] memory _id, string[] memory _name, address[] memory  _voterAddress, bool[] memory _approved) {
+    function getVoterList() public view returns(uint[] memory _id, string[] memory _firstname, string[] memory _lastname, string[] memory _email, string[] memory _mobile, string[] memory _birthDate, address[] memory  _voterAddress, bool[] memory _approved) {
         _id = new uint[](voterCount);
-        _name = new string[](voterCount);
+        _firstname = new string[](voterCount);
+        _lastname = new string[](voterCount);
+        _email = new string[](voterCount);
+        _mobile = new string[](voterCount);
+        _birthDate = new string[](voterCount);
         _voterAddress = new address[](voterCount);
         _approved = new bool[](voterCount);
         uint i;
         uint j = 0;
         for(i = 1; i <= voterCount; i++){
             _id[j] = voter[i].id;
-            _name[j] = voter[i].name;
+            _firstname[j] = voter[i].firstname;
+            _lastname[j] = voter[i].lastname;
+            _email[j] = voter[i].email;
+            _mobile[j] =  voter[i].mobile;
+            _birthDate[j] =  voter[i].birthDate;
             _voterAddress[j] = voter[i].voterAddress;
             _approved[j] = voter[i].approved;
             j++;
             
         }
-        return (_id, _name, _voterAddress, _approved);
+        return (_id, _firstname, _lastname, _email, _mobile, _birthDate, _voterAddress, _approved);
+    }
+    
+    function getVoterAddress(uint _id) public view returns(address _voterAddress){
+        _voterAddress = voter[_id].voterAddress;
+        return _voterAddress;
     }
     
     //approver voter to vote
-    function approveVoter(uint _id) public{
+    function approveVoter(uint _id) public onlyOwner{
         voter[_id].approved = true;
-        approveVoters[msg.sender] = true;
+        address _voterAddress = getVoterAddress(_id);
+        approveVoters[_voterAddress] = true;
     }
+    
+    
+    
     
     //user can vote
     function vote(uint _candidateId) public onlyRegisteredVoter{ 
@@ -142,6 +180,9 @@ contract Election {
 
         // Update candidate vote count
         candidates[_candidateId].voteCount++;
+        
+        uint amount = 1;
+        _sendTokens(msg.sender, amount);
 
         // trigget voted event
         emit votedEvent(_candidateId);
@@ -172,5 +213,9 @@ contract Election {
             index++;
         }
         return(_candidateId, _name, _totalVotes);
+    }
+    
+    function _sendTokens(address beneficiary, uint256 tokenAmount) public {
+        token.transfer(beneficiary, tokenAmount);
     }
 }
