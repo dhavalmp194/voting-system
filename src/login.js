@@ -162,19 +162,24 @@ var myContract = new web3.eth.Contract([
 		"name": "calculateVote",
 		"outputs": [
 			{
-				"internalType": "uint256[]",
+				"internalType": "uint256",
 				"name": "_candidateId",
-				"type": "uint256[]"
+				"type": "uint256"
 			},
 			{
-				"internalType": "string[]",
+				"internalType": "string",
 				"name": "_name",
-				"type": "string[]"
+				"type": "string"
 			},
 			{
-				"internalType": "uint256[]",
+				"internalType": "string",
+				"name": "_partyName",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
 				"name": "_totalVotes",
-				"type": "uint256[]"
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -254,6 +259,59 @@ var myContract = new web3.eth.Contract([
 				"internalType": "address",
 				"name": "_voterAddress",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getVoterDetails",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_firstname",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_lastname",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_email",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_mobile",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_birthDate",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "_voterAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_resAdderess",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "_approved",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -462,7 +520,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0xFcb57502BA54C5B275f73C4dA483247160675049');
+], '0x6205168d96D2E733d31C905311d8935D4a478151');
 
 var myAccount = [];
 var adminAddress = "0xa10434ab27543636ac39558da7e87300b08034b5";

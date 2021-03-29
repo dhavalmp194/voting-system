@@ -530,7 +530,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0x9ac39592e6ebdbc8713348c2d8868c92b675bd4c');
+], '0x6205168d96D2E733d31C905311d8935D4a478151');
 
 var tokenContract = new web3.eth.Contract([
 	{
@@ -1098,10 +1098,7 @@ const adminNavigation = () => {
             <a href="voter-list.html">
                 <i class="ion-ios-copy-outline"></i>Voter List</a>
         </li>
-        <li>
-            <a href="#">
-                <i class="ion-ios-person-outline"></i>Profile</a>
-        </li>`
+       `
         $("#navigationBar").append(nav);
 }
 
@@ -1116,7 +1113,7 @@ const userNavigation = () => {
             <i class="ion-ios-copy-outline"></i>Candidate List</a>
     </li>
     <li>
-        <a href="#">
+        <a href="db-my-profile.html">
             <i class="ion-ios-person-outline"></i>Profile</a>
     </li>`
     $("#navigationBar").append(nav);
