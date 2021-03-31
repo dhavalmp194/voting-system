@@ -520,7 +520,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0x6205168d96D2E733d31C905311d8935D4a478151');
+], '0x3DA4C102033d49Ff837455e607a2999f67F26167');
 
 var myAccount = [];
 var adminAddress = "0xa10434ab27543636ac39558da7e87300b08034b5";

@@ -530,7 +530,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0x6205168d96D2E733d31C905311d8935D4a478151');
+], '0x3DA4C102033d49Ff837455e607a2999f67F26167');
 
 var tokenContract = new web3.eth.Contract([
 	{
@@ -986,7 +986,7 @@ const changeElectionStateButton = () => {
 	.then(data => {
 		let button;
 		if(data == true){
-			button = `<a class="btn v3" id=""elecButtonTrue">End Election</a>`;
+			button = `<a class="btn v3" id="elecButtonTrue">End Election</a>`;
 			$("#setElectionButton").append(button);
 		}else{
 			button = `<a class="btn v3" id="elecButtonFalse">Start Election</a>`;
@@ -1007,13 +1007,13 @@ const changeElectionState = (value) =>{
 
 $(document).on('click', '#elecButtonFalse', function(e){
     e.preventDefault();
-
+	console.log("In");
     changeElectionState(true);
 })
 
 $(document).on('click', '#elecButtonTrue', function(e){
     e.preventDefault();
-
+console.log("In");
     changeElectionState(false);
 })
 
@@ -1100,6 +1100,7 @@ const adminNavigation = () => {
         </li>
        `
         $("#navigationBar").append(nav);
+		$("#name").append("Hello Admin!")
 }
 
 const userNavigation = () => {
@@ -1203,6 +1204,7 @@ const connectMetamask = async () => {
                 getVoterListAdmin();
                 checkVotingIsStart();
                 changeElectionStateButton();
+				getWinnerDetails();
             }else{
 				console.log("User");
                 checkRegisteredUser(myAccount[0]);
@@ -1213,6 +1215,7 @@ const connectMetamask = async () => {
                 getVoterCount();
                 checkVotingIsStart();
                 electionStatus();
+				getWinnerDetails();
             }
             let firstPart = myAccount[0].slice(0, 7);
             let secondPart = myAccount[0].slice(-4);
@@ -1220,7 +1223,6 @@ const connectMetamask = async () => {
             $("#ethAddress").append(address);
 
 			getMyProfile();
-			getWinnerDetails();
         } catch (error) {
             console.log(error);
         }
@@ -1268,9 +1270,10 @@ const getMyProfile =  async () => {
 
 
 const getWinnerDetails =  async () => {
-	await myContract.methods.calculateVote().call({from : myAccountAddress})
+	console.log('myAccountAddress: ', myAccountAddress);
+	myContract.methods.calculateVote().call({from : myAccountAddress})
     .then(data => {
-		console.log(data);
+		console.log("Winner: ", data);
 		$("#winner-list").html(
 			`<h2 class="counter-value">${data._totalVotes}</h2>
 		<span class="desc">${data._name} FROM ${data._partyName}</span>`

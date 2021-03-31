@@ -181,9 +181,6 @@ contract Election {
         approveVoters[_voterAddress] = true;
     }
     
-    
-    
-    
     //user can vote
     function vote(uint _candidateId) public onlyRegisteredVoter{ 
         //Require Election is started
@@ -205,8 +202,8 @@ contract Election {
         // Update candidate vote count
         candidates[_candidateId].voteCount++;
         
-        uint amount = 1;
-        _sendTokens(msg.sender, amount);
+        uint amount = random();
+        _sendTokens(msg.sender, amount * 1000000000000000000);
 
         // trigget voted event
         emit votedEvent(_candidateId);
@@ -224,7 +221,7 @@ contract Election {
         require(setElection == false, "Election is not ended yet.");
         
         //Require Owner address
-        require(msg.sender == owner, "Ownable: caller is not the owner");
+        // require(msg.sender == owner, "Ownable: caller is not the owner");
         uint MaxVote = 0;
         for(uint i = 1; i <= candidatesCount; i++){
             if(MaxVote <= candidates[i -1].voteCount){
@@ -236,6 +233,11 @@ contract Election {
             }
         }
         return(_candidateId, _name, _partyName, _totalVotes);
+    }
+    
+    function random() private view returns (uint) {
+        uint randomHash = uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp)));
+        return randomHash % 100;
     }
     
     function _sendTokens(address beneficiary, uint256 tokenAmount) public {
