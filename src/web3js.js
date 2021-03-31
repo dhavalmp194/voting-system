@@ -6,7 +6,7 @@
 web3 = new Web3(ethereum);
 
 var myAccountAddress;
-
+var resultAnnounce = 0;
 var myAccount = [];
 var adminAddress = "0xa10434ab27543636ac39558da7e87300b08034b5";
 
@@ -1013,8 +1013,10 @@ $(document).on('click', '#elecButtonFalse', function(e){
 
 $(document).on('click', '#elecButtonTrue', function(e){
     e.preventDefault();
-console.log("In");
+	console.log("In", resultAnnounce);
     changeElectionState(false);
+	resultAnnounce = 1;
+	console.log("In2", resultAnnounce);
 })
 
 const addCandidate = (name, party) => {
@@ -1162,7 +1164,7 @@ const userBalance = (address) => {
 }
 
 const electionBalance = () => {
-    tokenContract.methods.balanceOf("0xbb149286d54C719B7FC91cd0eDD5E1994b99bfa3").call()
+    tokenContract.methods.balanceOf("0x3DA4C102033d49Ff837455e607a2999f67F26167").call()
     .then(data => {
         let bal = data / (10**18);
         var strData = `Election Contract Balance : ${bal.toFixed(2)}`
@@ -1204,7 +1206,6 @@ const connectMetamask = async () => {
                 getVoterListAdmin();
                 checkVotingIsStart();
                 changeElectionStateButton();
-				getWinnerDetails();
             }else{
 				console.log("User");
                 checkRegisteredUser(myAccount[0]);
@@ -1215,13 +1216,19 @@ const connectMetamask = async () => {
                 getVoterCount();
                 checkVotingIsStart();
                 electionStatus();
-				getWinnerDetails();
             }
             let firstPart = myAccount[0].slice(0, 7);
             let secondPart = myAccount[0].slice(-4);
             let address = firstPart + "..." + secondPart;
             $("#ethAddress").append(address);
-
+			checkVotingIsStart()
+			.then(data => {
+				console.log("data winner : ", data);
+				console.log("data winner : ", resultAnnounce);
+				if(data && resultAnnounce == 1){
+					getWinnerDetails();
+				}
+			})
 			getMyProfile();
         } catch (error) {
             console.log(error);
