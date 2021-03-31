@@ -1,6 +1,6 @@
-// if (!window.ethereum) {
-//     web3 = window.ethereum.enable();
-// } 
+if (!window.ethereum) {
+    web3 = window.ethereum.enable();
+} 
 
 // web3 = new Web3(new window.ethereum.HttpProvider("https://kovan.infura.io/v3/d3c130d0062b49f78f315220f14db23e"));
 web3 = new Web3(ethereum);
@@ -91,6 +91,11 @@ var myContract = new web3.eth.Contract([
 				"internalType": "string",
 				"name": "_birthDate",
 				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_otp",
+				"type": "uint256"
 			}
 		],
 		"name": "registerVoter",
@@ -107,6 +112,19 @@ var myContract = new web3.eth.Contract([
 			}
 		],
 		"name": "setElectionState",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_otp",
+				"type": "uint256"
+			}
+		],
+		"name": "submitOTP",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -474,6 +492,16 @@ var myContract = new web3.eth.Contract([
 				"internalType": "bool",
 				"name": "approved",
 				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "otp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "verify",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -530,7 +558,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0x3DA4C102033d49Ff837455e607a2999f67F26167');
+], '0x81b24b731a72ba29029e97ed930c3f73b5b06438');
 
 var tokenContract = new web3.eth.Contract([
 	{
@@ -1038,8 +1066,8 @@ $(document).on('submit', '#addCandidate', function(e){
     addCandidate(fundName, partyName);
 })
 
-const registerUser = (fname, lname, email, mobile, resAddress, birthDate) => {
-    myContract.methods.registerVoter(fname, lname, email, mobile, resAddress, birthDate).send({from : myAccount[0]},
+const registerUser = async (fname, lname, email, mobile, resAddress, birthDate) => {
+    await myContract.methods.registerVoter(fname, lname, email, mobile, resAddress, birthDate).send({from : myAccount[0]},
         function(data, error){
             console.log('error: ', error);
             console.log('data: ', data);

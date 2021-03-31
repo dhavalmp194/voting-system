@@ -81,6 +81,11 @@ var myContract = new web3.eth.Contract([
 				"internalType": "string",
 				"name": "_birthDate",
 				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_otp",
+				"type": "uint256"
 			}
 		],
 		"name": "registerVoter",
@@ -97,6 +102,19 @@ var myContract = new web3.eth.Contract([
 			}
 		],
 		"name": "setElectionState",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_otp",
+				"type": "uint256"
+			}
+		],
+		"name": "submitOTP",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -464,6 +482,16 @@ var myContract = new web3.eth.Contract([
 				"internalType": "bool",
 				"name": "approved",
 				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "otp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "verify",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -520,28 +548,58 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0x3DA4C102033d49Ff837455e607a2999f67F26167');
+], '0x81b24b731a72ba29029e97ed930c3f73b5b06438');
 
 var myAccount = [];
 var adminAddress = "0xa10434ab27543636ac39558da7e87300b08034b5";
 
 const registerUser = async (fname, lname, email, mobile, resAddress, birthDate) => {
     myAccount = await ethereum.request({ method: 'eth_requestAccounts' });
+	var otp = Math.floor((Math.random() * 1000) + 1000);
+	console.log(email);
+	
+
+
     console.log(myAccount[0]);
-    myContract.methods.registerVoter(fname, lname, email, mobile, resAddress, birthDate).send({from : myAccount[0]})
+    await myContract.methods.registerVoter(fname, lname, email, mobile, resAddress, birthDate, otp).send({from : myAccount[0]})
+    .then(data => {
+		console.log(otp);
+		Email.send({
+			Host : "smtp.elasticemail.com",
+			Username : "angularproject.it@gmail.com",
+			Password : "86A4FF5725748EF930FA88EB3DD7CF442316",
+			To : email,
+			From : "angularproject.it@gmail.com",
+			Subject : "OTP for voting System",
+			Body : `OTP : ${otp}`
+		}).then((data) => {
+			console.log(data);
+			alert('Mail sent')
+		}
+		).catch( (e) => {
+			console.log(e);	
+		});
+
+		$("#loginForm").hide();
+		$("#OTPForm").show();
+        // window.location.href = "index.html";
+    })
+    .catch(err => {
+        console.log(err);
+    })
+}
+
+const submitOTP = async (OTP) => {
+    await myContract.methods.submitOTP(OTP).send({from : myAccount[0]})
     .then(data => {
         window.location.href = "index.html";
     })
     .catch(err => {
         console.log(err);
     })
-        // function(data, error){
-        //     console.log('error: ', error);
-        //     console.log('data: ', data);
-        // })
 }
 
-$(document).on('submit', '#login-form', function(e){
+$(document).on('submit', '#login-form', async function(e){
     e.preventDefault();
     var fName = $("#fname").val();
     var lName = $("#lname").val();
@@ -549,5 +607,13 @@ $(document).on('submit', '#login-form', function(e){
     var mobile = $("#mobile").val();
     var address = $("#address").val();
     var birthDate = $("#birthdate").val();
-    registerUser(fName, lName, email, mobile, address, birthDate);
+    await registerUser(fName, lName, email, mobile, address, birthDate);
+
+	
+})
+
+$(document).on('submit', '#submit-otp-form', async function(e){
+    e.preventDefault();
+    var OTP = $("#OTP").val();
+    await submitOTP(OTP);
 })

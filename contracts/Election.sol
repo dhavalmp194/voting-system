@@ -27,6 +27,8 @@ contract Election {
         string resAddress;
         string birthDate;
         bool approved;
+        uint256 otp;
+        bool verify;
     }
     
     //register voter
@@ -102,7 +104,7 @@ contract Election {
     }
     
     //register voter
-    function registerVoter(string memory _firstname, string memory _lastname, string memory _email, string memory _mobile, string memory _resAddress, string memory _birthDate) public {
+    function registerVoter(string memory _firstname, string memory _lastname, string memory _email, string memory _mobile, string memory _resAddress, string memory _birthDate, uint _otp) public {
         require(!registeredVoter[msg.sender], "Already registered");
         voterCount++;
         voter[voterCount].id = voterCount;
@@ -114,9 +116,28 @@ contract Election {
         voter[voterCount].resAddress = _resAddress;
         voter[voterCount].birthDate = _birthDate;
         voter[voterCount].approved = false;
+        voter[voterCount].otp = _otp;
+        voter[voterCount].verify = false;
         voterAddress.push(msg.sender);
         registeredVoter[msg.sender] = true;
     }
+
+    // submit OTP
+    function submitOTP(uint _otp) public {
+        uint i;
+        uint j = 0;
+        for(i = 1; i <= voterCount; i++){
+            if(voter[i].voterAddress == msg.sender){
+                if(voter[i].otp == _otp){
+                    voter[i].verify = true;
+                }
+            break;
+            }
+            j++;
+            
+        }
+    }
+
     
     //get all voter list
     function getVoterList() public view returns(uint[] memory _id, string[] memory _firstname, string[] memory _lastname, string[] memory _email, string[] memory _mobile, string[] memory _birthDate, address[] memory  _voterAddress, bool[] memory _approved) {
