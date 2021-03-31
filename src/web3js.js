@@ -1101,11 +1101,13 @@ $(document).on('click', '#approve', function(e){
     approveVoter(dataId);
 })
 
-const voteCandidate = (id) => {
-    myContract.methods.vote(id).send({from : myAccount[0]}, (data, error) =>{
-        console.log("hash: ", data);
-        console.log(error)
-    })
+const voteCandidate = async (id) => {
+    await myContract.methods.vote(id).send({from : myAccount[0]}).then((data) => {
+		console.log(data);
+		window.location.href = "thankyou.html";
+	}).catch((e) => {
+		console.log(e);
+	})
 }
 
 $(document).on('click', '#vote', function(e){
