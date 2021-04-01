@@ -6,7 +6,7 @@ if (!window.ethereum) {
 web3 = new Web3(ethereum);
 
 var myAccountAddress;
-var resultAnnounce = 0;
+var resultAnnounce;
 var myAccount = [];
 var adminAddress = "0xa10434ab27543636ac39558da7e87300b08034b5";
 
@@ -558,7 +558,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0x81b24b731a72ba29029e97ed930c3f73b5b06438');
+], '0x564aA56d56964C183f57B6647084854B3C8BF39E');
 
 var tokenContract = new web3.eth.Contract([
 	{
@@ -1194,7 +1194,7 @@ const userBalance = (address) => {
 }
 
 const electionBalance = () => {
-    tokenContract.methods.balanceOf("0x3DA4C102033d49Ff837455e607a2999f67F26167").call()
+    tokenContract.methods.balanceOf("0x564aA56d56964C183f57B6647084854B3C8BF39E").call()
     .then(data => {
         let bal = data / (10**18);
         var strData = `Election Contract Balance : ${bal.toFixed(2)}`
