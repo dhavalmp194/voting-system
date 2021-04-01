@@ -69,17 +69,17 @@ var myContract = new web3.eth.Contract([
 			},
 			{
 				"internalType": "string",
-				"name": "_lastname",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
 				"name": "_email",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
 				"name": "_mobile",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_voterId",
 				"type": "string"
 			},
 			{
@@ -228,6 +228,19 @@ var myContract = new web3.eth.Contract([
 	},
 	{
 		"inputs": [],
+		"name": "declareWinner",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "getCandidateList",
 		"outputs": [
 			{
@@ -308,17 +321,17 @@ var myContract = new web3.eth.Contract([
 			},
 			{
 				"internalType": "string",
-				"name": "_lastname",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
 				"name": "_email",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
 				"name": "_mobile",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_voterId",
 				"type": "string"
 			},
 			{
@@ -361,17 +374,17 @@ var myContract = new web3.eth.Contract([
 			},
 			{
 				"internalType": "string[]",
-				"name": "_lastname",
-				"type": "string[]"
-			},
-			{
-				"internalType": "string[]",
 				"name": "_email",
 				"type": "string[]"
 			},
 			{
 				"internalType": "string[]",
 				"name": "_mobile",
+				"type": "string[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_voterId",
 				"type": "string[]"
 			},
 			{
@@ -465,17 +478,17 @@ var myContract = new web3.eth.Contract([
 			},
 			{
 				"internalType": "string",
-				"name": "lastname",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
 				"name": "email",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
 				"name": "mobile",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "voterId",
 				"type": "string"
 			},
 			{
@@ -558,7 +571,7 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0x564aA56d56964C183f57B6647084854B3C8BF39E');
+], '0x53436A698A865894b67E26Ea898ACcd8dEB1eBF7');
 
 var tokenContract = new web3.eth.Contract([
 	{
@@ -930,9 +943,10 @@ const getVoterListAdmin = () => {
                                 <div class="booking-img">
                                     <img src="images/clients/reviewer-1.png" style="padding: 5px;" alt="...">
                                 </div>
-                                <h4>${data[1][index]} ${data[2][index]}</h4>
-                                <p>Email : ${data[3][index]}</p>
-                                <p>Mobile : ${data[4][index]}</p>
+                                <h4>${data[1][index]}</h4>
+                                <p>Email : ${data[2][index]}</p>
+                                <p>Mobile : ${data[3][index]}</p>
+								<p>Voter Id : ${data[4][index]}</p>
                                 <p>BirthDate : ${data[5][index]}</p>
                                 <p>Ethereum Address : ${data[6][index]}</p>
                                 <ul class="buttons">
@@ -944,9 +958,10 @@ const getVoterListAdmin = () => {
                                 <div class="booking-img">
                                     <img src="images/clients/reviewer-1.png" style="padding: 5px;" alt="...">
                                 </div>
-                                <h4>${data[1][index]} ${data[2][index]}</h4>
-                                <p>Email : ${data[3][index]}</p>
-                                <p>Mobile : ${data[4][index]}</p>
+                                <h4>${data[1][index]}</h4>
+                                <p>Email : ${data[2][index]}</p>
+                                <p>Mobile : ${data[3][index]}</p>
+								<p>Voter Id : ${data[4][index]}</p>s
                                 <p>BirthDate : ${data[5][index]}</p>
                                 <p>Ethereum Address : ${data[6][index]}</p>
                                 <ul class="buttons" id="approve" data-id=${data[0][index]}>
@@ -1027,6 +1042,7 @@ const changeElectionState = (value) =>{
     myContract.methods.setElectionState(value).send({from : myAccount[0]})
         .then((data) => {
             console.log(data)
+			window.location.reload();
         })
         .catch((e) => {
             console.log(e);
@@ -1218,6 +1234,18 @@ const addCandidateForm = () => {
     $("#addCandidate-form").append(data);
 }
 
+const checkDeclareWinner = () => {
+	return new Promise((resolve, reject) => {
+
+		myContract.methods.declareWinner().call().then(data => {
+			resolve(data);
+		}).catch(e => {
+			console.log(e);
+			reject(e);
+		})
+	})
+}
+
 const connectMetamask = async () => {
     if (window.ethereum) {
         try {
@@ -1251,11 +1279,17 @@ const connectMetamask = async () => {
             let secondPart = myAccount[0].slice(-4);
             let address = firstPart + "..." + secondPart;
             $("#ethAddress").append(address);
-			checkVotingIsStart()
+			// checkVotingIsStart()
+			// .then(data => {
+			// 	console.log("data winner : ", data);
+			// 	console.log("data winner : ", resultAnnounce);
+			// 	if(data && resultAnnounce == 1){
+			// 		getWinnerDetails();
+			// 	}
+			// })
+			checkDeclareWinner()
 			.then(data => {
-				console.log("data winner : ", data);
-				console.log("data winner : ", resultAnnounce);
-				if(data && resultAnnounce == 1){
+				if(data){
 					getWinnerDetails();
 				}
 			})
@@ -1277,8 +1311,8 @@ const getMyProfile =  async () => {
 								<span>${data._firstname}</span>
 							</li>
 							<li>
-								<h6>Last Name :</h6>
-								<span>${data._lastname}</span>
+								<h6>Voter Id :</h6>
+								<span>${data._voterId}</span>
 							</li>
 							<li>
 								<h6>Eth  Address :</h6>

@@ -59,17 +59,17 @@ var myContract = new web3.eth.Contract([
 			},
 			{
 				"internalType": "string",
-				"name": "_lastname",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
 				"name": "_email",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
 				"name": "_mobile",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_voterId",
 				"type": "string"
 			},
 			{
@@ -218,6 +218,19 @@ var myContract = new web3.eth.Contract([
 	},
 	{
 		"inputs": [],
+		"name": "declareWinner",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "getCandidateList",
 		"outputs": [
 			{
@@ -298,17 +311,17 @@ var myContract = new web3.eth.Contract([
 			},
 			{
 				"internalType": "string",
-				"name": "_lastname",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
 				"name": "_email",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
 				"name": "_mobile",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_voterId",
 				"type": "string"
 			},
 			{
@@ -351,17 +364,17 @@ var myContract = new web3.eth.Contract([
 			},
 			{
 				"internalType": "string[]",
-				"name": "_lastname",
-				"type": "string[]"
-			},
-			{
-				"internalType": "string[]",
 				"name": "_email",
 				"type": "string[]"
 			},
 			{
 				"internalType": "string[]",
 				"name": "_mobile",
+				"type": "string[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_voterId",
 				"type": "string[]"
 			},
 			{
@@ -455,17 +468,17 @@ var myContract = new web3.eth.Contract([
 			},
 			{
 				"internalType": "string",
-				"name": "lastname",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
 				"name": "email",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
 				"name": "mobile",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "voterId",
 				"type": "string"
 			},
 			{
@@ -548,12 +561,15 @@ var myContract = new web3.eth.Contract([
 		"stateMutability": "view",
 		"type": "function"
 	}
-], '0x564aA56d56964C183f57B6647084854B3C8BF39E');
+], '0x53436A698A865894b67E26Ea898ACcd8dEB1eBF7');
 
 var myAccount = [];
 var adminAddress = "0xa10434ab27543636ac39558da7e87300b08034b5";
 
-const registerUser = async (fname, lname, email, mobile, resAddress, birthDate) => {
+const registerUser = async (fname, email, mobile, voterid, resAddress, birthDate) => {
+	console.log('resAddress: ', resAddress);
+	console.log('fname: ', fname);
+	
     myAccount = await ethereum.request({ method: 'eth_requestAccounts' });
 	var otp = Math.floor((Math.random() * 1000) + 1000);
 	console.log(email);
@@ -561,9 +577,9 @@ const registerUser = async (fname, lname, email, mobile, resAddress, birthDate) 
 
 
     console.log(myAccount[0]);
-    await myContract.methods.registerVoter(fname, lname, email, mobile, resAddress, birthDate, otp).send({from : myAccount[0]})
+    await myContract.methods.registerVoter(fname, email, mobile, voterid, resAddress, birthDate, otp).send({from : myAccount[0]})
     .then(data => {
-		console.log(otp);
+		console.log("OTP: ", otp);
 		Email.send({
 			Host : "smtp.elasticemail.com",
 			Username : "angularproject.it@gmail.com",
@@ -603,11 +619,18 @@ $(document).on('submit', '#login-form', async function(e){
     e.preventDefault();
     var fName = $("#fname").val();
     var lName = $("#lname").val();
+	var mName = $("#mname").val();
     var email = $("#email").val();
     var mobile = $("#mobile").val();
-    var address = $("#address").val();
+    var address1 = $("#address1").val();
+	var address2 = $("#address2").val();
+	var voterId = $("#voterId").val();
     var birthDate = $("#birthdate").val();
-    await registerUser(fName, lName, email, mobile, address, birthDate);
+	var address = address1 + ", " + address2;
+	var name = fName + " " + mName + " " + lName;
+	console.log('name: ', name);
+	
+    await registerUser(name, email, mobile, voterId, address, birthDate);
 
 	
 })
