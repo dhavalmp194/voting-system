@@ -1120,6 +1120,7 @@ $(document).on('click', '#approve', function(e){
 const voteCandidate = async (id) => {
     await myContract.methods.vote(id).send({from : myAccount[0]}).then((data) => {
 		console.log(data);
+		alert('your vote counted!')
 		window.location.href = "thankyou.html";
 	}).catch((e) => {
 		console.log(e);
