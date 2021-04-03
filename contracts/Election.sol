@@ -10,6 +10,8 @@ contract Election {
     
     address owner;
     
+    bool public declareWinner = false;
+    
     struct Candidate {
         uint id;
         string name;
@@ -21,9 +23,9 @@ contract Election {
         uint id;
         address voterAddress;
         string firstname;
-        string lastname;
         string email;
         string mobile;
+        string voterId;
         string resAddress;
         string birthDate;
         bool approved;
@@ -104,15 +106,15 @@ contract Election {
     }
     
     //register voter
-    function registerVoter(string memory _firstname, string memory _lastname, string memory _email, string memory _mobile, string memory _resAddress, string memory _birthDate, uint _otp) public {
+    function registerVoter(string memory _firstname, string memory _email, string memory _mobile, string memory _voterId, string memory _resAddress, string memory _birthDate, uint _otp) public {
         require(!registeredVoter[msg.sender], "Already registered");
         voterCount++;
         voter[voterCount].id = voterCount;
         voter[voterCount].voterAddress = msg.sender;
         voter[voterCount].firstname = _firstname;
-        voter[voterCount].lastname = _lastname;
         voter[voterCount].email = _email;
         voter[voterCount].mobile = _mobile;
+        voter[voterCount].voterId = _voterId;
         voter[voterCount].resAddress = _resAddress;
         voter[voterCount].birthDate = _birthDate;
         voter[voterCount].approved = false;
@@ -140,10 +142,10 @@ contract Election {
 
     
     //get all voter list
-    function getVoterList() public view returns(uint[] memory _id, string[] memory _firstname, string[] memory _lastname, string[] memory _email, string[] memory _mobile, string[] memory _birthDate, address[] memory  _voterAddress, bool[] memory _approved) {
+    function getVoterList() public view returns(uint[] memory _id, string[] memory _firstname, string[] memory _email, string[] memory _mobile, string[] memory _voterId, string[] memory _birthDate, address[] memory  _voterAddress, bool[] memory _approved) {
         _id = new uint[](voterCount);
         _firstname = new string[](voterCount);
-        _lastname = new string[](voterCount);
+        _voterId = new string[](voterCount);
         _email = new string[](voterCount);
         _mobile = new string[](voterCount);
         _birthDate = new string[](voterCount);
@@ -154,28 +156,28 @@ contract Election {
         for(i = 1; i <= voterCount; i++){
             _id[j] = voter[i].id;
             _firstname[j] = voter[i].firstname;
-            _lastname[j] = voter[i].lastname;
             _email[j] = voter[i].email;
             _mobile[j] =  voter[i].mobile;
+            _voterId[j] = voter[i].voterId;
             _birthDate[j] =  voter[i].birthDate;
             _voterAddress[j] = voter[i].voterAddress;
             _approved[j] = voter[i].approved;
             j++;
             
         }
-        return (_id, _firstname, _lastname, _email, _mobile, _birthDate, _voterAddress, _approved);
+        return (_id, _firstname, _email, _mobile, _voterId, _birthDate, _voterAddress, _approved);
     }
     
-     function getVoterDetails() public view returns(uint _id, string memory _firstname, string memory _lastname, string memory _email, string memory _mobile, string memory _birthDate, address _voterAddress, string memory _resAdderess, bool _approved) {
+     function getVoterDetails() public view returns(uint _id, string memory _firstname, string memory _email, string memory _mobile, string memory _voterId, string memory _birthDate, address _voterAddress, string memory _resAdderess, bool _approved) {
         uint i;
         uint j = 0;
         for(i = 1; i <= voterCount; i++){
             if(voter[i].voterAddress == msg.sender){
             _id = voter[i].id;
             _firstname = voter[i].firstname;
-            _lastname = voter[i].lastname;
             _email = voter[i].email;
             _mobile =  voter[i].mobile;
+            _voterId = voter[i].voterId;
             _birthDate =  voter[i].birthDate;
             _voterAddress = voter[i].voterAddress;
             _approved = voter[i].approved;
@@ -186,7 +188,7 @@ contract Election {
             j++;
             
         }
-        return (_id, _firstname, _lastname, _email, _mobile, _birthDate, _voterAddress, _resAdderess, _approved);
+        return (_id, _firstname, _email, _mobile, _voterId, _birthDate, _voterAddress, _resAdderess, _approved);
     }
     
 
@@ -233,6 +235,9 @@ contract Election {
     //start election if true then 
     function setElectionState(bool _setElection) public onlyOwner{
         require(_setElection != setElection, "Election is already in selected state");
+        if(!_setElection){
+            declareWinner = true;
+        }
         setElection = _setElection;
     }
     
